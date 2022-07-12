@@ -1,7 +1,7 @@
-export const Content = ({ parts, exercises }) => {
-  const listItems = parts.map((part, i) => {
+export const Content = ({ parts }) => {
+  const listItems = parts.map((part) => {
     return <p>
-      {part} {exercises[i]}
+      {part.name} {part.exercises}
     </p>
   })
   return (

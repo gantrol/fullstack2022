@@ -1,5 +1,8 @@
-export const Total = ( {exercises} ) => {
+export const Total = ( {parts} ) => {
   return (
-    <p>Number of exercises {exercises.reduce((a, b) => a + b, 0)}</p>
+    <p>Number of exercises {parts.reduce((a, part) => {
+      console.log(part)
+      return a + part.exercises
+    }, 0)}</p>
   )
 }
