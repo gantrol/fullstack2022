@@ -1,10 +1,11 @@
 import { useState } from 'react'
+import { Anecdote } from './Anecdote'
 import { Button } from './Button'
 
 const randomInt = (start, end) => {
   // random return an int >= start and < end
   const r = Math.random()
-  return Math.round(r * (end - start)) + start
+  return Math.floor(r * (end - start)) + start
 }
 
 const App = () => {
@@ -32,15 +33,17 @@ const App = () => {
     setPoints(copy)
   }
 
+  // TODO: 这里去掉初始化的0，好像会有问题？可以研究一下reduce……
+  const maxIndex = points.reduce((maxIndex, item, index, arr) => item > arr[maxIndex] ? index : maxIndex, 0)
 
   return (
     <div>
-      <div>
-        {anecdotes[selected]}
-      </div>
-      <div>has {points[selected]} votes</div>
+      <h3>Anecdote of the day</h3>
+      <Anecdote text={anecdotes[selected]} point={points[selected]} />
       <Button text="random" onClick={randomSelect} />
       <Button text="vote" onClick={voteUp} />
+      <h3>Anecdote with most votes</h3>
+      <Anecdote text={anecdotes[maxIndex]} point={points[maxIndex]} />
     </div>
   )
 }
