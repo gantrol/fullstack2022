@@ -1,20 +1,23 @@
-export const Statistics = ({ good, nentral, bad }) => {
-  if (good === 0 && nentral === 0 && bad === 0) {
+import { StatisticLine } from "./StatisticLine"
+
+export const Statistics = ({ good, neutral, bad }) => {
+  if (good === 0 && neutral === 0 && bad === 0) {
     return <p>No feedback given</p>
   }
-  const sum = good + nentral + bad
+  const sum = good + neutral + bad
   const point = good - bad
-  const average = point / sum
-  const positive =  good / sum
+  const average = sum === 0 ? 0 : point / sum
+  const positive =  sum === 0 ? 0 : good / sum
+  const positive_text = `${positive * 100} %`
   return (
     <>
       <h3>statistics</h3>
-      <p>good {good}</p>
-      <p>neutral {nentral}</p>
-      <p>bad {bad}</p>
-      <p>all {sum}</p>
-      <p>average {average}</p>
-      <p>positive {positive * 100} %</p>
+      <StatisticLine text="good" value={good}/>
+      <StatisticLine text="neutral" value={neutral}/>
+      <StatisticLine text="bad" value={bad}/>
+      <StatisticLine text="all" value={sum}/>
+      <StatisticLine text="average" value={average}/>
+      <StatisticLine text="positive" value={positive_text}/>
     </>
   )
 }
