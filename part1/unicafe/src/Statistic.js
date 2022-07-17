@@ -1,4 +1,7 @@
 export const Statistics = ({ good, nentral, bad }) => {
+  if (good === 0 && nentral === 0 && bad === 0) {
+    return <p>No feedback given</p>
+  }
   const sum = good + nentral + bad
   const point = good - bad
   const average = point / sum
