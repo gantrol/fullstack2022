@@ -17,3 +17,8 @@ part2
 </pre>
 
 Put the whole react repository of the project to each folder except the folder <i>node_modules</i>
+
+## part1
+
+- unicafe: a feadback app with simple state
+- [anecdotes](https://www.comp.nus.edu.sg/~damithch/pages/SE-quotes.htm)
