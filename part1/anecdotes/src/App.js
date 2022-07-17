@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Button } from './Button'
 
 const randomInt = (start, end) => {
   // random return an int >= start and < end
@@ -17,17 +18,29 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
   ]
-
   const [selected, setSelected] = useState(0)
+  const [points, setPoints] = useState(Array(anecdotes.length).fill(0))
+
+  const randomSelect = () => {
+    const position = randomInt(0, anecdotes.length)
+    setSelected(position)
+  }
+
+  const voteUp = () => {
+    const copy = [...points]
+    copy[selected] += 1
+    setPoints(copy)
+  }
+
 
   return (
     <div>
       <div>
         {anecdotes[selected]}
       </div>
-      <button onClick={() => setSelected(randomInt(0, anecdotes.length))}>
-        random
-      </button>
+      <div>has {points[selected]} votes</div>
+      <Button text="random" onClick={randomSelect} />
+      <Button text="vote" onClick={voteUp} />
     </div>
   )
 }
