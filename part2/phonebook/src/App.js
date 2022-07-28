@@ -5,7 +5,7 @@ import { Persons } from './Persons'
 import personsService from './service/persons'
 const App = () => {
   const [persons, setPersons] = useState([])
-  const [newPerson, setNewPerson] = useState({'name': '', 'number': ''})
+  const [newPerson, setNewPerson] = useState({ 'name': '', 'number': '' })
   const [nameFilter, setNameFilter] = useState('')
 
   useEffect(() => {
@@ -29,8 +29,10 @@ const App = () => {
       }
       try {
         const response = await personsService.create(personObject)
+        // TODO: if (response.status === 200) {
         setPersons(persons.concat(response.data));
-        setNewPerson({'name': '', 'number': ''})
+        setNewPerson({ 'name': '', 'number': '' })
+        // }
       } catch (e) {
         alert('Node Created Failed')
       }
@@ -39,17 +41,36 @@ const App = () => {
     }
   }
 
+  const delPerson = async (id) => {
+    try {
+      const response = await personsService.del(id);
+      if (response.status === 200) {
+        try {
+          const getResp = await personsService.getAll();
+          if (response.status === 200) {
+            setPersons(getResp.data)
+          }
+        } catch (e) {
+          alert('Refetch all Failed')
+        }
+      }
+    } catch (e) {
+      alert('Node delete Failed')
+    }
+
+  }
+
   console.log('rendering')
   return (
     <>
       <h2>Phonebook</h2>
-      <Filter nameFilter={nameFilter} changeHandler={(e) => setNameFilter(e.target.value)}/>
+      <Filter nameFilter={nameFilter} changeHandler={(e) => setNameFilter(e.target.value)} />
 
       <h3>add a new</h3>
-      <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson}/>
+      <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson} />
 
       <h3>Numbers</h3>
-      <Persons persons={persons} nameFilter={nameFilter} />
+      <Persons persons={persons} nameFilter={nameFilter} delPerson={delPerson}/>
     </>
   )
 }
