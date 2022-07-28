@@ -1,5 +1,7 @@
 import { useState } from 'react'
-
+import { Filter } from './Filter'
+import { PersonForm } from './PersonForm'
+import { Persons } from './Persons'
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -16,7 +18,6 @@ const App = () => {
     event.preventDefault();
     // TODO: test check empty
     if (newPerson.name && newPerson.number) {
-      // TODO: get id
       const personObject = {
         ...newPerson,
         id: persons.length + 1
@@ -32,19 +33,13 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
-      <p>filter shown with <input type='text' value={nameFilter} onChange={(e) => setNameFilter(e.target.value)}/></p>
+      <Filter nameFilter={nameFilter} changeHandler={(e) => setNameFilter(e.target.value)}/>
 
       <h3>add a new</h3>
-      <form onSubmit={addPerson}>
-        <p>name: <input type="text" value={newPerson.name} onChange={e => setNewPerson({...newPerson, 'name': e.target.value})}/></p>
-        <p>number: <input type="text" value={newPerson.number} onChange={e => setNewPerson({...newPerson, 'number': e.target.value})}/></p>
-        <button type='submit'>save</button>
-      </form>
+      <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson}/>
 
       <h3>Numbers</h3>
-      {persons
-        .filter(p => p.name.includes(nameFilter))
-        .map(p => <p key={p.id}>{p.name} {p.number}</p>)}
+      <Persons persons={persons} nameFilter={nameFilter} />
     </>
   )
 }
