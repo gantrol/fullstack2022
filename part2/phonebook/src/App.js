@@ -1,17 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Filter } from './Filter'
 import { PersonForm } from './PersonForm'
 import { Persons } from './Persons'
+import axios from 'axios'
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ])
-  // TODO: object like this `{}`?
+  const [persons, setPersons] = useState([])
   const [newPerson, setNewPerson] = useState({'name': '', 'number': ''})
   const [nameFilter, setNameFilter] = useState('')
+
+  useEffect(() => {
+    // TODO: 为何会有两次side effect?
+    const fetchPersons = async () => {
+      console.log('side effect...')
+      const response = await axios.get('http://localhost:3001/persons')
+      setPersons(response.data)
+    }
+    fetchPersons()
+  }, [])
 
   // event handler
   const addPerson = (event) => {
@@ -29,7 +34,7 @@ const App = () => {
     }
   }
 
-  // renderer
+  console.log('rendering')
   return (
     <>
       <h2>Phonebook</h2>

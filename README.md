@@ -22,3 +22,21 @@ Put the whole react repository of the project to each folder except the folder <
 
 - unicafe: a feadback app with simple state
 - [anecdotes](https://www.comp.nus.edu.sg/~damithch/pages/SE-quotes.htm)
+
+## part2
+
+### tools
+
+#### json-server
+
+`npm install -g json-server`
+
+```sh
+npx json-server --port 3001 --watch db.json
+```
+
+### homework
+
+- phonebook
+- courseinfo
+
