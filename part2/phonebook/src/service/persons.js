@@ -14,11 +14,16 @@ const del = (id) => {
   return axios.delete(`${url}/${id}`)
 }
 
+const put = (person) => {
+  return axios.put(`${url}/${person.id}`, person)
+}
+
 // https://stackoverflow.com/questions/65738988/assign-object-to-a-variable-before-exporting-as-module-default-warning
 const exportedObject = {
   getAll,
   create,
-  del
+  del,
+  put
 };
 
 export default exportedObject;
