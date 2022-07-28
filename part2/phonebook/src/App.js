@@ -27,10 +27,13 @@ const App = () => {
         ...newPerson,
         id: persons.length + 1
       }
-      const response = await personsService.create(personObject)
-      // TODO: 
-      setPersons(persons.concat(response.data));
-      setNewPerson({'name': '', 'number': ''})
+      try {
+        const response = await personsService.create(personObject)
+        setPersons(persons.concat(response.data));
+        setNewPerson({'name': '', 'number': ''})
+      } catch (e) {
+        alert('Node Created Failed')
+      }
     } else {
       alert('No empty value')
     }
