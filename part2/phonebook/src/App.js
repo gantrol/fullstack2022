@@ -42,22 +42,24 @@ const App = () => {
   }
 
   const delPerson = async (id) => {
-    try {
-      const response = await personsService.del(id);
-      if (response.status === 200) {
-        try {
-          const getResp = await personsService.getAll();
-          if (response.status === 200) {
-            setPersons(getResp.data)
+    const isConfirm = window.confirm(`Delete ${persons.find(p => p.id === id).name}?`)
+    if (isConfirm) {
+      try {
+        const response = await personsService.del(id);
+        if (response.status === 200) {
+          try {
+            const getResp = await personsService.getAll();
+            if (response.status === 200) {
+              setPersons(getResp.data)
+            }
+          } catch (e) {
+            alert('Refetch all Failed')
           }
-        } catch (e) {
-          alert('Refetch all Failed')
         }
-      }
-    } catch (e) {
-      alert('Node delete Failed')
+      } catch (e) {
+        alert('Node delete Failed')
+      }  
     }
-
   }
 
   console.log('rendering')
