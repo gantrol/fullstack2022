@@ -2,10 +2,18 @@ import { useState, useEffect } from 'react'
 import { Filter } from './Filter'
 import { PersonForm } from './PersonForm'
 import { Persons } from './Persons'
+import { Notification } from './Notification'
 import personsService from './service/persons'
+import './app.css'
+
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newPerson, setNewPerson] = useState({ 'name': '', 'number': '' })
+  // TODO: 一个message队列，而且可以x掉或一段时间后消除（这个练习貌似没有必要搞了）
+  const [errorMessage, setErrorMessage] = useState('')
+  const [warningMessage, setWarningMessage] = useState('')
+  const [infoMessage, setInfoMessage] = useState('')
   const [nameFilter, setNameFilter] = useState('')
 
   useEffect(() => {
@@ -35,8 +43,15 @@ const App = () => {
           try {
             await personsService.put(personObject)
             setPersons(persons.map(p => p.id === id ? personObject : p))
+            setInfoMessage(`${personObject.name} Updated`)
+            setTimeout(() => {
+              setInfoMessage(null)
+            }, 5000)
           } catch (e) {
-            alert(`Failed to change ${newPerson.name}`)
+            setErrorMessage(`Failed to change ${newPerson.name}`)
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           }
         }
       } else {
@@ -48,14 +63,24 @@ const App = () => {
           const response = await personsService.create(personObject)
           // TODO: if (response.status === 200) {
           setPersons(persons.concat(response.data));
+          setInfoMessage(`${personObject.name} Added`)
+            setTimeout(() => {
+              setInfoMessage(null)
+            }, 5000)
           setNewPerson({ 'name': '', 'number': '' })
           // }
         } catch (e) {
-          alert('Node Created Failed')
+          setErrorMessage('Node Created Failed')
+          setTimeout(() => {
+            setErrorMessage(null)
+          }, 5000)
         }
       }
     } else {
-      alert('No empty value')
+      setErrorMessage('No empty value')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -71,11 +96,17 @@ const App = () => {
               setPersons(getResp.data)
             }
           } catch (e) {
-            alert('Refetch all Failed')
+            setErrorMessage('Refetch all Failed')
+            setTimeout(() => {
+              setErrorMessage(null)
+            }, 5000)
           }
         }
       } catch (e) {
-        alert('Node delete Failed')
+        setErrorMessage('Node delete Failed')
+        setTimeout(() => {
+          setErrorMessage(null)
+        }, 5000)
       }  
     }
   }
@@ -89,6 +120,9 @@ const App = () => {
       <h3>add a new</h3>
       <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson} />
 
+      <Notification message={errorMessage} messageType='error' />
+      <Notification message={warningMessage} messageType='warning' />
+      <Notification message={infoMessage} messageType='info' />
       <h3>Numbers</h3>
       <Persons persons={persons} nameFilter={nameFilter} delPerson={delPerson} />
     </>

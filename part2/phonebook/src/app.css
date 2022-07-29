@@ -1,0 +1,11 @@
+.error {
+  border: solid 2px red;
+}
+
+.info {
+  border: solid 2px green;
+}
+
+.warning {
+  border: solid 2px orange;
+}
