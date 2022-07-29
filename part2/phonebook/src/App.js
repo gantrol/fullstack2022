@@ -23,18 +23,36 @@ const App = () => {
     event.preventDefault();
     // TODO: test check empty
     if (newPerson.name && newPerson.number) {
-      const personObject = {
-        ...newPerson,
-        id: persons.length + 1
-      }
-      try {
-        const response = await personsService.create(personObject)
-        // TODO: if (response.status === 200) {
-        setPersons(persons.concat(response.data));
-        setNewPerson({ 'name': '', 'number': '' })
-        // }
-      } catch (e) {
-        alert('Node Created Failed')
+      const index = persons.findIndex(p => newPerson.name === p.name)
+      if (index > -1) {
+        const id = index + 1
+        const isConfirm = window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`)
+        if (isConfirm) {
+          const personObject = {
+            ...newPerson,
+            id: id
+          }
+          try {
+            await personsService.put(personObject)
+            setPersons(persons.map(p => p.id === id ? personObject : p))
+          } catch (e) {
+            alert(`Failed to change ${newPerson.name}`)
+          }
+        }
+      } else {
+        const personObject = {
+          ...newPerson,
+          id: persons.length + 1
+        }
+        try {
+          const response = await personsService.create(personObject)
+          // TODO: if (response.status === 200) {
+          setPersons(persons.concat(response.data));
+          setNewPerson({ 'name': '', 'number': '' })
+          // }
+        } catch (e) {
+          alert('Node Created Failed')
+        }
       }
     } else {
       alert('No empty value')
@@ -72,7 +90,7 @@ const App = () => {
       <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson} />
 
       <h3>Numbers</h3>
-      <Persons persons={persons} nameFilter={nameFilter} delPerson={delPerson}/>
+      <Persons persons={persons} nameFilter={nameFilter} delPerson={delPerson} />
     </>
   )
 }
