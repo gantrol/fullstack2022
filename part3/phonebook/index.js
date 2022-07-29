@@ -32,6 +32,10 @@ app.get('/', (req, res) => {
   res.send('rootroot')
 })
 
+app.get('/info', (req, res) => {
+  res.send(`Phonebook has info for ${persons.length} people.\n${new Date()}`)
+})
+
 app.get('/api/persons', (req, res) => {
   res.send(persons)
 })
