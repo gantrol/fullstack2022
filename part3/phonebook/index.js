@@ -1,11 +1,15 @@
 const express = require('express')
 const cors = require('cors')
+const morgan = require('morgan')
+const { response } = require('express')
+
 
 const app = express()
 app.use(express.json())
 app.use(cors())
+app.use(morgan('combined'))
 
-const persons = [
+let persons = [
   {
     "id": 1,
     "name": "Arto Hellas",
@@ -64,6 +68,15 @@ app.post('/api/persons', (req, res) => {
   res.json(personObject)
 })
 
+app.delete('/api/persons/:id', (req, res) => {
+  const id = Number(req.params.id)
+  if (!isNaN(id)) {
+    persons = persons.filter(person => person.id !== id)
+  }
+  // For simplicity, 204 only, no 404 
+  res.status(204).end()
+})
+
 app.get('/api/persons/:id', (req, res) => {
   const id = req.params.id
   const index = persons.findIndex(p => p.id === id)
@@ -73,6 +86,12 @@ app.get('/api/persons/:id', (req, res) => {
     res.status(404).send("Sorry can't find that!")
   }
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001
 app.listen(PORT, () => {
