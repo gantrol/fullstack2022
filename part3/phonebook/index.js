@@ -7,7 +7,14 @@ const { response } = require('express')
 const app = express()
 app.use(express.json())
 app.use(cors())
-app.use(morgan('combined'))
+
+morgan.token('body', function (req, res) {
+  if (Object.keys(req.body).length !== 0) {
+    return JSON.stringify(req.body)
+  }
+})
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 let persons = [
   {
@@ -49,17 +56,16 @@ app.post('/api/persons', (req, res) => {
   // TODO：校验逻辑
   const id = Math.ceil(Math.random() * 9999999);
   const person = req.body
-  console.log(person)
 
   if (person.name == '' || person.number == '') {
-    return res.status(400).json({ 
-      error: 'content missing' 
+    return res.status(400).json({
+      error: 'content missing'
     })
   }
 
   // name is duplicative
   if (persons.find(p => p.name === person.name)) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: `${person.name} is duplicative`
     })
   }
