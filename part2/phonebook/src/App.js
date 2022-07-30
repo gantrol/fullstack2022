@@ -89,10 +89,10 @@ const App = () => {
     if (isConfirm) {
       try {
         const response = await personsService.del(id);
-        if (response.status === 200) {
+        if (response.status === 204) {
           try {
             const getResp = await personsService.getAll();
-            if (response.status === 200) {
+            if (getResp.status === 200) {
               setPersons(getResp.data)
             }
           } catch (e) {
