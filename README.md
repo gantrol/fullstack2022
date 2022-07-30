@@ -40,3 +40,11 @@ npx json-server --port 3001 --watch db.json
 - phonebook
 - courseinfo
 
+## part3
+
+- phonebook backend
+
+### TODO
+
+- 各种 exports 的区别
+- var 与 let 的区别
