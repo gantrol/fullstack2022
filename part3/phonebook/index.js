@@ -5,6 +5,7 @@ const { response } = require('express')
 
 
 const app = express()
+app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 
@@ -38,11 +39,6 @@ let persons = [
     "number": "39-23-6423122"
   }
 ]
-
-// respond with "hello world" when a GET request is made to the homepage
-app.get('/', (req, res) => {
-  res.send('rootroot')
-})
 
 app.get('/info', (req, res) => {
   res.send(`Phonebook has info for ${persons.length} people.\n${new Date()}`)
@@ -99,7 +95,7 @@ const unknownEndpoint = (request, response) => {
 
 app.use(unknownEndpoint)
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
