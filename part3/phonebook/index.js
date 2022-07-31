@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+const process = require('process')
 const PhoneBook = require('./models/phoneBook')
 
 const app = express()
@@ -9,7 +10,7 @@ app.use(express.static('build'))
 app.use(express.json())
 app.use(cors())
 
-morgan.token('body', function (req, res) {
+morgan.token('body', (req) => {
   if (Object.keys(req.body).length !== 0) {
     return JSON.stringify(req.body)
   }
@@ -17,19 +18,19 @@ morgan.token('body', function (req, res) {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-app.get('/info', async (req, res) => {
+app.get('/info', async (_req, res) => {
   const persons = await PhoneBook.find({})
   res.send(`Phonebook has info for ${persons.length} people.\n${new Date()}`)
 })
 
-app.get('/api/persons', async (req, res) => {
+app.get('/api/persons', async (_req, res) => {
   const persons = await PhoneBook.find({})
   res.send(persons)
 })
 
 app.post('/api/persons', async (req, res, next) => {
   const person = req.body
-  // if duplicative, replace
+  // TODO: if duplicative, reject
   try {
     const dbPersonWithSameName = await PhoneBook.findOne({ name: person.name })
     if (!dbPersonWithSameName) {
@@ -41,7 +42,7 @@ app.post('/api/persons', async (req, res, next) => {
         ...person,
         id: dbPersonWithSameName.id,
       }
-      await PhoneBook.updateOne({ id: personObject.id }, personObject, 
+      await PhoneBook.updateOne({ id: personObject.id }, personObject,
         { runValidators: true, context: 'query' })
       res.json(personObject)
     }
@@ -53,7 +54,7 @@ app.post('/api/persons', async (req, res, next) => {
 app.delete('/api/persons/:id', async (req, res, next) => {
   const id = req.params.id
   try {
-    await PhoneBook.findByIdAndRemove(id, 
+    await PhoneBook.findByIdAndRemove(id,
       { runValidators: true, context: 'query' })
     res.status(204).end()
   }
@@ -65,7 +66,7 @@ app.put('/api/persons/:id', async (req, res, next) => {
   const body = req.body
   try {
     // https://github.com/mongoose-unique-validator/mongoose-unique-validator#find--updates
-    // When using findOneAndUpdate and related methods, mongoose doesn't automatically run validation. 
+    // When using findOneAndUpdate and related methods, mongoose doesn't automatically run validation.
     const updatedOne = await PhoneBook.findByIdAndUpdate(id, body,
       { runValidators: true, context: 'query' })
     res.json(updatedOne)
@@ -79,17 +80,17 @@ app.get('/api/persons/:id', async (req, res, next) => {
     if (person) {
       res.send(person)
     } else {
-      res.status(404).send("Sorry can't find that!")
+      res.status(404).send('Sorry can\'t find that!')
     }
   } catch (error) {
     next(error)
   }
 })
 
-const unknownEndpoint = (request, response) => {
+const unknownEndpoint = (_request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
-const errorHandler = (error, request, response, next) => {
+const errorHandler = (error, _request, response, next) => {
   console.error(error.message)
 
   if (error.name === 'CastError') {

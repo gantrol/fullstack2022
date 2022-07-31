@@ -12,7 +12,7 @@ const App = () => {
   const [newPerson, setNewPerson] = useState({ 'name': '', 'number': '' })
   // TODO: 一个message队列，而且可以x掉或一段时间后消除（这个练习貌似没有必要搞了）
   const [errorMessage, setErrorMessage] = useState('')
-  const [warningMessage, setWarningMessage] = useState('')
+  // const [warningMessage, setWarningMessage] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
   const [nameFilter, setNameFilter] = useState('')
 
@@ -121,7 +121,7 @@ const App = () => {
       <PersonForm addPerson={addPerson} newPerson={newPerson} setNewPerson={setNewPerson} />
 
       <Notification message={errorMessage} messageType='error' />
-      <Notification message={warningMessage} messageType='warning' />
+      {/* <Notification message={warningMessage} messageType='warning' /> */}
       <Notification message={infoMessage} messageType='info' />
       <h3>Numbers</h3>
       <Persons persons={persons} nameFilter={nameFilter} delPerson={delPerson} />

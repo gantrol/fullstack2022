@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const process = require('process')
 
 if (process.argv.length < 5) {
   console.log('Usage: node mongo.js <account> <password> <name> <phonenumber>')
@@ -20,7 +21,7 @@ const PhoneBook = mongoose.model('PhoneBook', phoneBookSchema)
 
 mongoose
   .connect(url)
-  .then((result) => {
+  .then(() => {
     console.log('connected')
 
     const phonebook = new PhoneBook({
