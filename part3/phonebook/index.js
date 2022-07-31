@@ -41,7 +41,8 @@ app.post('/api/persons', async (req, res, next) => {
         ...person,
         id: dbPersonWithSameName.id,
       }
-      await PhoneBook.updateOne({ id: personObject.id }, personObject)
+      await PhoneBook.updateOne({ id: personObject.id }, personObject, 
+        { runValidators: true, context: 'query' })
       res.json(personObject)
     }
   } catch (error) {
@@ -52,7 +53,8 @@ app.post('/api/persons', async (req, res, next) => {
 app.delete('/api/persons/:id', async (req, res, next) => {
   const id = req.params.id
   try {
-    await PhoneBook.findByIdAndRemove(id)
+    await PhoneBook.findByIdAndRemove(id, 
+      { runValidators: true, context: 'query' })
     res.status(204).end()
   }
   catch (error) { next(error) }

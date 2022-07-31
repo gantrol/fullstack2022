@@ -20,8 +20,15 @@ const phoneBookSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    minLength: 5,
-    require: false
+    minLength: 8,
+    require: true,
+    validate: {
+      validator: (v) => {
+        // https://regex-vis.com/?r=%2F%5Cd%7B2%2C3%7D-%5Cd%7B7%2C8%7D%2F
+        return /\d{2,3}-\d{5,9}/.test(v); 
+      },
+      message: props => `${props.value} is not a valid phone number!`
+    },
   },
 })
 
