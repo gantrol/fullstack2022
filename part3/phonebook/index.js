@@ -29,12 +29,6 @@ app.get('/api/persons', async (req, res) => {
 
 app.post('/api/persons', async (req, res, next) => {
   const person = req.body
-
-  if (!person || person.name == '' || person.number == '') {
-    return res.status(400).json({
-      error: 'content missing'
-    })
-  }
   // if duplicative, replace
   try {
     const dbPersonWithSameName = await PhoneBook.findOne({ name: person.name })
@@ -51,10 +45,8 @@ app.post('/api/persons', async (req, res, next) => {
       res.json(personObject)
     }
   } catch (error) {
-    console.log(error)
-    res.status(400).json({ error: 'content missing' })
+    next(error)
   }
-
 })
 
 app.delete('/api/persons/:id', async (req, res, next) => {
@@ -70,7 +62,10 @@ app.put('/api/persons/:id', async (req, res, next) => {
   const id = req.params.id
   const body = req.body
   try {
-    const updatedOne = await PhoneBook.findByIdAndUpdate(id, body)
+    // https://github.com/mongoose-unique-validator/mongoose-unique-validator#find--updates
+    // When using findOneAndUpdate and related methods, mongoose doesn't automatically run validation. 
+    const updatedOne = await PhoneBook.findByIdAndUpdate(id, body,
+      { runValidators: true, context: 'query' })
     res.json(updatedOne)
   }
   catch (error) { next(error) }
@@ -97,8 +92,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
-
   next(error)
 }
 

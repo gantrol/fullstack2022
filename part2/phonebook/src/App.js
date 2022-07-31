@@ -70,7 +70,7 @@ const App = () => {
           setNewPerson({ 'name': '', 'number': '' })
           // }
         } catch (e) {
-          setErrorMessage('Node Created Failed')
+          setErrorMessage(e.response.data.error)
           setTimeout(() => {
             setErrorMessage(null)
           }, 5000)
