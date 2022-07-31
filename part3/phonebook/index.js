@@ -48,30 +48,46 @@ app.post('/api/persons', async (req, res) => {
   res.json(savedObject)
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  if (!isNaN(id)) {
-    persons = persons.filter(person => person.id !== id)
+app.delete('/api/persons/:id', async (req, res, next) => {
+  const id = req.params.id
+  if (id) {
+    try {
+      console.log(id)
+      await PhoneBook.findByIdAndRemove(id)
+      res.status(204).end()
+    }
+    catch (error) { next(error) }
   }
-  // For simplicity, 204 only, no 404 
-  res.status(204).end()
 })
 
-app.get('/api/persons/:id', async (req, res) => {
-  const person = await PhoneBook.findById(req.params.id)
-  // TODO: check empty
-  if (person) {
-    res.send(person)
-  } else {
-    res.status(404).send("Sorry can't find that!")
+app.get('/api/persons/:id', async (req, res, next) => {
+  try {
+    const person = await PhoneBook.findById(req.params.id)
+    if (person) {
+      res.send(person)
+    } else {
+      res.status(404).send("Sorry can't find that!")
+    }
+  } catch (error) {
+    next(error)
   }
 })
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
 
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
