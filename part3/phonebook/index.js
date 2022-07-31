@@ -27,37 +27,53 @@ app.get('/api/persons', async (req, res) => {
   res.send(persons)
 })
 
-app.post('/api/persons', async (req, res) => {
-  // TODO：校验逻辑
+app.post('/api/persons', async (req, res, next) => {
   const person = req.body
 
-  if (person.name == '' || person.number == '') {
+  if (!person || person.name == '' || person.number == '') {
     return res.status(400).json({
       error: 'content missing'
     })
   }
+  // if duplicative, replace
+  try {
+    const dbPersonWithSameName = await PhoneBook.findOne({ name: person.name })
+    if (!dbPersonWithSameName) {
+      const personObject = new PhoneBook({ ...person })
+      const savedObject = await personObject.save()
+      res.json(savedObject)
+    } else {
+      const personObject = {
+        ...person,
+        id: dbPersonWithSameName.id,
+      }
+      await PhoneBook.updateOne({ id: personObject.id }, personObject)
+      res.json(personObject)
+    }
+  } catch (error) {
+    console.log(error)
+    res.status(400).json({ error: 'content missing' })
+  }
 
-  // TODO: name is duplicative
-  // if (persons.find(p => p.name === person.name)) {
-  //   return res.status(400).json({
-  //     error: `${person.name} is duplicative`
-  //   })
-  // }
-  const personObject = new PhoneBook({ ...person })
-  const savedObject = await personObject.save()
-  res.json(savedObject)
 })
 
 app.delete('/api/persons/:id', async (req, res, next) => {
   const id = req.params.id
-  if (id) {
-    try {
-      console.log(id)
-      await PhoneBook.findByIdAndRemove(id)
-      res.status(204).end()
-    }
-    catch (error) { next(error) }
+  try {
+    await PhoneBook.findByIdAndRemove(id)
+    res.status(204).end()
   }
+  catch (error) { next(error) }
+})
+
+app.put('/api/persons/:id', async (req, res, next) => {
+  const id = req.params.id
+  const body = req.body
+  try {
+    const updatedOne = await PhoneBook.findByIdAndUpdate(id, body)
+    res.json(updatedOne)
+  }
+  catch (error) { next(error) }
 })
 
 app.get('/api/persons/:id', async (req, res, next) => {
