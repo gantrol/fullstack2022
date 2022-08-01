@@ -5,12 +5,14 @@ const initialBlogs = [
     title: 'TEST',
     author: 'hello',
     url: 'test',
+    content: 'test blogs',
     likes: 0
   },
   {
     title: 'Browser can execute only Javascript',
     author: 'hello',
     url: 'browser',
+    content: 'browser can...',
     likes: 0
   }
 ]

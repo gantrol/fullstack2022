@@ -6,17 +6,47 @@ const api = supertest(app)
 
 const Blog = require('../models/blogs')
 
-describe('when there is initially some blogs saved', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(helper.initialBlogs)
-  })
+const blogsApi = '/api/blogs'
 
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(helper.initialBlogs)
+}, 10000)
+
+
+describe('when there is initially some blogs saved', () => {
+  test('add a blogs', async () => {
+    const newContent = 'new a blog'
+    const newBlog = {
+      title: 'new Blog',
+      author: 'test',
+      url: 'new',
+      content: newContent,
+      likes: 1
+    }
+    await api
+      .post(blogsApi)
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+    const contents = blogsAtEnd.map(blog => blog.content)
+    expect(contents).toContain(newContent)
+  })
+})
+
+describe('when viewing blogs', () => {
   test('blogs are returned as json', async () => {
     await api
-      .get('/api/blogs')
+      .get(blogsApi)
       .expect(200)
       .expect('Content-Type', /application\/json/)
+  }, 10000)
+
+  test('check id is defined', async () => {
+    const res = await api.get(blogsApi)
+    expect(res.body[0].id).toBeDefined()
   })
 })
 
