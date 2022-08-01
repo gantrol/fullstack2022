@@ -15,7 +15,7 @@ beforeEach(async () => {
 
 
 describe('when there is initially some blogs saved', () => {
-  test('add a blogs', async () => {
+  test('add a blog', async () => {
     const newContent = 'new a blog'
     const newBlog = {
       title: 'new Blog',
@@ -33,6 +33,30 @@ describe('when there is initially some blogs saved', () => {
     const contents = blogsAtEnd.map(blog => blog.content)
     expect(contents).toContain(newContent)
     expect(res.body.likes).toEqual(0)
+  })
+  
+  test('add a blog without title', async () => {
+    const newBlog = {
+      author: 'test',
+      url: 'new',
+      content: 'newContent'
+    }
+    await api
+      .post(blogsApi)
+      .send(newBlog)
+      .expect(400)
+  })
+
+  test('add a blog without url', async () => {
+    const newBlog = {
+      author: 'test',
+      title: 'new',
+      content: 'newContent'
+    }
+    await api
+      .post(blogsApi)
+      .send(newBlog)
+      .expect(400)
   })
 })
 
