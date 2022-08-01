@@ -74,6 +74,28 @@ describe('when viewing blogs', () => {
   })
 })
 
+describe('delete blogs', () => {
+  test('delelte by id', async() => {
+    const res = await api.get(blogsApi)
+    const blog = res.body[0]
+    await api
+      .delete(`${blogsApi}/${blog.id}`)
+      .expect(204)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+  })
+
+  test('delelte by id not validate', async() => {
+    const res = await api.get(blogsApi)
+    const blog = res.body[0]
+    await api
+      .delete(`${blogsApi}/${blog.id}a`)
+      .expect(400)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
