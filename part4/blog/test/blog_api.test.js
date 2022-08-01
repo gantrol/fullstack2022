@@ -34,7 +34,7 @@ describe('when there is initially some blogs saved', () => {
     expect(contents).toContain(newContent)
     expect(res.body.likes).toEqual(0)
   })
-  
+
   test('add a blog without title', async () => {
     const newBlog = {
       author: 'test',
@@ -72,10 +72,28 @@ describe('when viewing blogs', () => {
     const res = await api.get(blogsApi)
     expect(res.body[0].id).toBeDefined()
   })
+  test('fails with statuscode 404 if note does not exist', async () => {
+    const validNonexistingId = await helper.nonExistingId()
+
+    console.log(validNonexistingId)
+
+    await api
+      .get(`${blogsApi}/${validNonexistingId}`)
+      .expect(404)
+  })
+  test('get by id not validate', async () => {
+    const res = await api.get(blogsApi)
+    const blog = res.body[0]
+    await api
+      .get(`${blogsApi}/${blog.id}a`)
+      .expect(400)
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
 })
 
 describe('delete blogs', () => {
-  test('delelte by id', async() => {
+  test('delelte by id', async () => {
     const res = await api.get(blogsApi)
     const blog = res.body[0]
     await api
@@ -85,7 +103,7 @@ describe('delete blogs', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
   })
 
-  test('delelte by id not validate', async() => {
+  test('delete by id not validate', async () => {
     const res = await api.get(blogsApi)
     const blog = res.body[0]
     await api
@@ -93,6 +111,37 @@ describe('delete blogs', () => {
       .expect(400)
     const blogsAtEnd = await helper.blogsInDb()
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+  })
+})
+
+describe('update blogs', () => {
+  test('update like', async () => {
+    const res = await api.get(blogsApi)
+    const blog = res.body[0]
+    const updatedBlog = (await api
+      .put(`${blogsApi}/${blog.id}`)
+      .send({
+        ...blog,
+        likes: blog.likes + 1
+      })
+      .expect(200)).body
+    expect(updatedBlog.likes).toEqual(blog.likes + 1)
+  })
+  test('success if note does not exist', async () => {
+    const validNonexistingId = await helper.nonExistingId()
+
+    console.log(validNonexistingId)
+
+    await api
+      .put(`${blogsApi}/${validNonexistingId}`)
+      .expect(200)
+  })
+  test('put by id not validate', async () => {
+    const res = await api.get(blogsApi)
+    const blog = res.body[0]
+    await api
+      .put(`${blogsApi}/${blog.id}a`)
+      .expect(400)
   })
 })
 
