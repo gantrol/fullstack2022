@@ -17,12 +17,7 @@ blogsRouter.get('/:id', async (request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
   const body = request.body
-
-  const blog = new Blog({
-    content: body.content,
-    important: body.important || false,
-    date: new Date(),
-  })
+  const blog = new Blog(body)
 
   const savedBlog = await blog.save()
   response.status(201).json(savedBlog)

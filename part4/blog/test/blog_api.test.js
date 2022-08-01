@@ -21,10 +21,9 @@ describe('when there is initially some blogs saved', () => {
       title: 'new Blog',
       author: 'test',
       url: 'new',
-      content: newContent,
-      likes: 1
+      content: newContent
     }
-    await api
+    const res = await api
       .post(blogsApi)
       .send(newBlog)
       .expect(201)
@@ -33,6 +32,7 @@ describe('when there is initially some blogs saved', () => {
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
     const contents = blogsAtEnd.map(blog => blog.content)
     expect(contents).toContain(newContent)
+    expect(res.body.likes).toEqual(0)
   })
 })
 
